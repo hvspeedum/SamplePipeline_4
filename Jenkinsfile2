@@ -1,0 +1,14 @@
+environment {
+        // Define environment variables
+        BRANCH_NAME = "${env.GIT_BRANCH}"  // This will pick the branch name, modify accordingly if needed
+    }
+ 
+    stages {
+        stage('Manual Approval') {
+            steps {
+                script {
+                    // Trigger manual approval before proceeding
+                    input message: 'Do you want to proceed with the build and deployment?', ok: 'Yes', submitter: 'GaganSPD'
+                }
+            }
+        }
