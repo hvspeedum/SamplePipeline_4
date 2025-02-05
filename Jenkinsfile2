@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+
+//added change from JenkinsFile
+environment {
+        // Define environment variables
+        BRANCH_NAME = "${env.GIT_dev}"  // This will pick the branch name, modify accordingly if needed
+    }
+
+ 
+stages {
+
+
+//added change from JenkinsFile
+        stage('Manual Approval') {
+            steps {
+                script {
+                    // Trigger manual approval before proceeding
+                    input message: 'Do you want to proceed with the build and deployment?', ok: 'Yes', submitter: 'GaganSPD'
+                }
+            }
+        }
+
+
+        stage('Build') { 
+            steps {
+                sh 'npm install' 
+            }
+        }
+
+        stage('Test') {
+            steps {
+
+                sh 'chmod +x jenkins/scripts/test.sh'
+                sh 'ls -l jenkins/scripts/test.sh' // Debugging step
+
+                sh './jenkins/scripts/test.sh'
+            }
+        }
+
+stage('Deliver') {
+            steps {
+                
+                sh 'chmod +x jenkins/scripts/deliver.sh'
+                sh 'ls -l jenkins/scripts/deliver.sh' // Debugging step
+
+                sh './jenkins/scripts/deliver.sh'
+                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                sh './jenkins/scripts/kill.sh'
+            }
+        }
+ 
+   }
+
+}
+
